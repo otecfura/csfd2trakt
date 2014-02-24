@@ -85,7 +85,6 @@ void loadImdbIDFromWeb(FilmCSFD film) {
   var request = HttpRequest.getString(jsonData).then(onDataLoaded);
 }
 
-// print the raw json response text from the server
 void onDataLoaded(String responseText) {
   Map parsedMap = JSON.decode(responseText);
   String imdbIdString = parsedMap["imdbID"];
@@ -110,15 +109,12 @@ void sendToTraktTV(){
 }
 
 void saveDataToTrakt(FilmCSFD film) {
-  HttpRequest request = new HttpRequest(); // create a new XHR
-  // add an event handler that is called when the request finishes
+  HttpRequest request = new HttpRequest();
   var data = {'username': userName, 'password': passwordSHA1,'imdb_id': film.imdbID, 'title': film.name ,'year': film.year, 'last_played': film.seen};
   var encodedData = JSON.encode(data);
   request.open("POST", urlSendTrakt, async:false);
   request.setRequestHeader('Access-Control-Allow-Origin', '*');
   request.setRequestHeader('Access-Control-Allow-Methods', 'POST');
-  request.setRequestHeader('Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept');
+  request.setRequestHeader('Access-Control-Allow-Headers','Origin, X-Requested-With, Content-Type, Accept');
   request.send(encodedData);
-  
 }
