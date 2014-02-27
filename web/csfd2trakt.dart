@@ -8,7 +8,7 @@ String userName;
 String passwordSHA1;
 
 String urlOmdbapi = "http://www.omdbapi.com/";
-String urlSendTrakt = "http://www.otecfura.cz/csfd2trakt/send.php";
+String urlSendOtecfura = "http://www.otecfura.cz/csfd2trakt/send.php";
 
 var csvData;
 var numberOfOmdbResponses=0;
@@ -29,7 +29,7 @@ void main() {
   btn=querySelector("#bigbutton");
   btn.onClick.listen((MouseEvent me) {
     imdbList.clear();
-    btn.disabled=true;
+    //btn.disabled=true;
     getUserName();
     getSHA1Password();
     getCSVData();
@@ -93,7 +93,6 @@ void onDataLoaded(String responseText) {
   print(imdbList);
   if(dataList.length-1==numberOfOmdbResponses){
     numberOfOmdbResponses=0;
-    querySelector("#testText").text="ok";
     sendToTraktTV();
   }else{
     numberOfOmdbResponses++;
@@ -112,9 +111,7 @@ void saveDataToTrakt(FilmCSFD film) {
   HttpRequest request = new HttpRequest();
   var data = {'username': userName, 'password': passwordSHA1,'imdb_id': film.imdbID, 'title': film.name ,'year': film.year, 'last_played': film.seen};
   var encodedData = JSON.encode(data);
-  request.open("POST", urlSendTrakt, async:false);
-  request.setRequestHeader('Access-Control-Allow-Origin', '*');
-  request.setRequestHeader('Access-Control-Allow-Methods', 'POST');
-  request.setRequestHeader('Access-Control-Allow-Headers','Origin, X-Requested-With, Content-Type, Accept');
+  print(encodedData);
+  request.open("POST", urlSendOtecfura, async:false);
   request.send(encodedData);
 }

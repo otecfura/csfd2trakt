@@ -3,3 +3,7 @@ packages
 .project
 pubspec.lock
 build
+web/csfd2trakt.dart.js
+web/csfd2trakt.dart.js.deps
+web/csfd2trakt.dart.js.map
+web/csfd2trakt.dart.precompiled.js
