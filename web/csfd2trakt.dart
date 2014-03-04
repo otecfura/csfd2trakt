@@ -12,6 +12,7 @@ String urlSendOtecfura = "http://www.otecfura.cz/csfd2trakt/send.php";
 
 var csvData;
 var numberOfOmdbResponses=0;
+HttpRequest request;
 
 List<FilmCSFD> dataList=new List<FilmCSFD>();
 List<String> imdbList= new List<String>();
@@ -103,15 +104,27 @@ void sendToTraktTV(){
   for(int i=0; i<imdbList.length; i++){
     dataList[i].imdbID=imdbList[i];
     saveDataToTrakt(dataList[i]);
-    querySelector("#testText").text=imdbList[i];
   }
 }
 
 void saveDataToTrakt(FilmCSFD film) {
-  HttpRequest request = new HttpRequest();
-  var data = {'username': userName, 'password': passwordSHA1,'imdb_id': film.imdbID, 'title': film.name ,'year': film.year, 'last_played': film.seen};
+  request = new HttpRequest();
+  
+  var data = {
+              'username': userName, 
+              'password': passwordSHA1,
+              'imdb_id': film.imdbID, 
+              'title': film.name ,
+              'year': film.year, 
+              'last_played': film.seen
+              };
+  
   var encodedData = JSON.encode(data);
-  print(encodedData);
+  request.onReadyStateChange.listen(onData);
   request.open("POST", urlSendOtecfura, async:false);
   request.send(encodedData);
+}
+
+void onData(_) {
+  querySelector("#testText").text=request.responseText;
 }
