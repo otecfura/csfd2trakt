@@ -39,13 +39,18 @@ class FilmCSFD{
 void main() {
   btn=querySelector("#bigbutton");
   btn.onClick.listen((MouseEvent me) {
-    imdbList.clear();
-    //btn.disabled=true;
+    btn.hidden=true;
+    clearData();
     getUserName();
     getSHA1Password();
     getCSVData();
     getImdbID();
   });
+}
+
+void clearData(){
+  imdbList.clear();
+  dataList.clear();
 }
 
 void getUserName(){
@@ -92,23 +97,34 @@ void getImdbID() {
 
 void loadImdbIDFromWeb(FilmCSFD film) {
   String jsonData = urlOmdbapi + '?t=' + film.name + '&y=' + film.year;
-  querySelector("#testText").text=jsonData;
   var request = HttpRequest.getString(jsonData).then(onDataLoaded);
 }
 
 void onDataLoaded(String responseText) {
+  numberOfOmdbResponses++;
+  howManyResponsesToTextIndicator();
   Map parsedMap = JSON.decode(responseText);
   String imdbIdString = parsedMap["imdbID"];
-  querySelector("#testText").text=imdbIdString;
+
   imdbList.add(imdbIdString);
-  print(imdbList);
-  if(dataList.length-1==numberOfOmdbResponses){
-    numberOfOmdbResponses=0;
+
+  if(endOfList()){
     saveImdbIdToList();
     saveDataToTrakt();
-  }else{
-    numberOfOmdbResponses++;
+    numberOfOmdbResponses=0;
   }
+}
+
+void howManyResponsesToTextIndicator(){
+  querySelector("#testText").text="Zpracováno " + numberOfOmdbResponses.toString() + " z " + numberOfItemsInList().toString();
+}
+
+bool endOfList(){
+  return numberOfItemsInList()==numberOfOmdbResponses;
+}
+
+int numberOfItemsInList(){
+  return dataList.length;
 }
 
 void saveImdbIdToList(){
@@ -130,6 +146,7 @@ void saveDataToTrakt() {
   request.onReadyStateChange.listen(onData);
   request.open("POST", urlSendOtecfura, async:false);
   request.send(encodedData);
+  btn.hidden=false;
 }
 
 void onData(_) {
