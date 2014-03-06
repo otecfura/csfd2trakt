@@ -22,8 +22,18 @@ class FilmCSFD{
   String imdbID;
   String name;
   String year;
-  int grade;
+  String grade;
   String seen;
+  
+  Map toJson() { 
+      Map map = new Map();
+      map["imdbID"] = imdbID;
+      map["name"] = name;
+      map["year"] = year;
+      map["grade"] = grade;
+      map["seen"] = seen;
+      return map;
+    }  
 }
 
 void main() {
@@ -69,7 +79,7 @@ void getImdbID() {
       grade=0;
     }
     
-    oneFilm.grade=grade;
+    oneFilm.grade=grade.toString();
     oneFilm.seen=oneFilmStringList.elementAt(5);
     
     dataList.add(oneFilm);
@@ -94,32 +104,29 @@ void onDataLoaded(String responseText) {
   print(imdbList);
   if(dataList.length-1==numberOfOmdbResponses){
     numberOfOmdbResponses=0;
-    sendToTraktTV();
+    saveImdbIdToList();
+    saveDataToTrakt();
   }else{
     numberOfOmdbResponses++;
   }
 }
 
-void sendToTraktTV(){
+void saveImdbIdToList(){
   for(int i=0; i<imdbList.length; i++){
     dataList[i].imdbID=imdbList[i];
-    saveDataToTrakt(dataList[i]);
   }
 }
 
-void saveDataToTrakt(FilmCSFD film) {
+void saveDataToTrakt() {
   request = new HttpRequest();
   
-  var data = {
-              'username': userName, 
-              'password': passwordSHA1,
-              'imdb_id': film.imdbID, 
-              'title': film.name ,
-              'year': film.year, 
-              'last_played': film.seen
-              };
+  var mapData = new Map();
+  mapData["username"] = userName;
+  mapData["password"] = passwordSHA1;
+  mapData["movies"] = dataList;
+    
   
-  var encodedData = JSON.encode(data);
+  var encodedData = JSON.encode(mapData);
   request.onReadyStateChange.listen(onData);
   request.open("POST", urlSendOtecfura, async:false);
   request.send(encodedData);
